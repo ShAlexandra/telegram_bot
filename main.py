@@ -22,25 +22,14 @@ FIO, AGE, CITY, PHONE, EMAIL, EDUCATION, KNOWLEDGE, EXPERIENCE, LINK, DAY, SOURC
 f = True
 
 def start(update: Update, context: CallbackContext) -> int:
-    """Starts the conversation and asks the user about their gender."""
-#    reply_keyboard = [['Boy', 'Girl', 'Other']]
-
-#    update.message.reply_text(
-#        'Hi! My name is Professor Bot. I will hold a conversation with you. '
-#        'Send /cancel to stop talking to me.\n\n'
-#        'Are you a boy or a girl?',
-#        reply_markup=ReplyKeyboardMarkup(
-#            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Boy or Girl?'
-#        ),
-#    )
 
     user = update.message.from_user
     update.message.reply_text(
-        'Здравствуйте!:\n'
+        'Здравствуйте, ответьте на несколько вопросов для рассмотрение Вас на должность дизайнера.:\n'
         'Нажмите /cancel, чтобы перестать общаться со мной'
     )
 
-    update.message.reply_text('Ваше ФИО:')
+    update.message.reply_text('Укажите ФИО:')
 
     return FIO
 
@@ -48,7 +37,7 @@ def start(update: Update, context: CallbackContext) -> int:
 def fio(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("ФИО: %s", update.message.text)
-    update.message.reply_text('Ваш возраст:')
+    update.message.reply_text('Укажите возраст:')
 
     return AGE
 
@@ -59,7 +48,7 @@ def age(update: Update, context: CallbackContext) -> int:
     if int(update.message.text) > 70:
         global f
         f = False
-    update.message.reply_text('Ваш город проживания:')
+    update.message.reply_text('Укажите город проживания:')
 
     return CITY
 
@@ -67,14 +56,14 @@ def age(update: Update, context: CallbackContext) -> int:
 def city(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("Город проживания: %s", update.message.text)
-    update.message.reply_text('Номер телефона:')
+    update.message.reply_text('Укажите номер телефона:')
     return PHONE
 
 
 def phone(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("Номер телефона: %s", update.message.text)
-    update.message.reply_text('Ваш E-mail:')
+    update.message.reply_text('Укажите Email:')
     return EMAIL
 
 
@@ -116,7 +105,7 @@ def knowledge(update: Update, context: CallbackContext) -> int:
     if update.message.text == 'Нет':
         global f
         f = False
-    update.message.reply_text('Стаж работы дизайнером(в месяцах):')
+    update.message.reply_text('Укажите стаж работы дизайнером:')
     return EXPERIENCE
 
 
@@ -126,7 +115,7 @@ def experience(update: Update, context: CallbackContext) -> int:
     if int(update.message.text) < 12:
         global f
         f = False
-    update.message.reply_text('Ссылка на портфолио:')
+    update.message.reply_text('Прикрепите ссылку на портфолио:')
     return LINK
 
 
@@ -151,7 +140,7 @@ def day(update: Update, context: CallbackContext) -> int:
     if update.message.text == 'Нет':
         global f
         f = False
-    update.message.reply_text('Предпочитаемый уровень зарплаты:')
+    update.message.reply_text('Укажите предпочитаемый уровень зарплаты:')
     return SOURCE
 
 
@@ -161,9 +150,9 @@ def source(update: Update, context: CallbackContext) -> int:
     if int(update.message.text) > 70000:
         global f
         f = False
-    update.message.reply_text('Спасибо за ответы!')
+    update.message.reply_text('Спасибо! Ответы обрабатываются')
     if f:
-        update.message.reply_text('Мы приглашаем вас на собеседование!')
+        update.message.reply_text('Скоро с вами свяжутся для назначения времени собеседования!')
     else:
         update.message.reply_text('К сожалению, вы нам не подходите')
     return ConversationHandler.END
