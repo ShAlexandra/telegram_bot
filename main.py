@@ -19,16 +19,13 @@ logger = logging.getLogger(__name__)
 
 FIO, AGE, CITY, PHONE, EMAIL, EDUCATION, KNOWLEDGE, EXPERIENCE, LINK, DAY, SOURCE, INCOME = range(12)
 
-f = True
 
 def start(update: Update, context: CallbackContext) -> int:
-
     user = update.message.from_user
     update.message.reply_text(
-        'Здравствуйте, ответьте на несколько вопросов для рассмотрение Вас на должность дизайнера.:\n'
+        'Спасибо за отклик на вакансию, ответьте на несколько вопросов о себе!:\n'
         'Нажмите /cancel, чтобы перестать общаться со мной'
     )
-
     update.message.reply_text('Укажите ФИО:')
 
     return FIO
@@ -74,62 +71,66 @@ def email(update: Update, context: CallbackContext) -> int:
     reply_keyboard = [['Да', 'Нет']]
 
     update.message.reply_text(
-            'Есть ли у вас образование в сфере дизайна?',
-            reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Да или Нет?'
-            ),
-        )
+        'Есть ли у вас образование в сфере дизайна?',
+        reply_markup=ReplyKeyboardMarkup(
+            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Да или Нет?'
+        ),
+    )
+
     return EDUCATION
 
 
 def education(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
-    logger.info("Образовние дизайна: %s", update.message.text)
+    logger.info("Образовние: %s", update.message.text)
     if update.message.text == 'Нет':
         global f
         f = False
     reply_keyboard = [['Да', 'Нет']]
 
     update.message.reply_text(
-            'Умеете ли вы работать в Adobe Illustrator и Photoshop?',
-            reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Да или Нет?'
-            ),
-        )
+        'Умеете ли вы работать в Adobe Illustrator и Photoshop?',
+        reply_markup=ReplyKeyboardMarkup(
+            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Да или Нет?'
+        ),
+    )
+
     return KNOWLEDGE
 
 
 def knowledge(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
-    logger.info("Навыки программ: %s", update.message.text)
+    logger.info("Навыки: %s", update.message.text)
     if update.message.text == 'Нет':
         global f
         f = False
-    update.message.reply_text('Укажите стаж работы дизайнером:')
+    update.message.reply_text('Укажите стаж работы графическим дизайнером (количество лет):')
+
     return EXPERIENCE
 
 
 def experience(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("Стаж работы: %s", update.message.text)
-    if int(update.message.text) < 12:
+    if int(update.message.text) < 1:
         global f
         f = False
     update.message.reply_text('Прикрепите ссылку на портфолио:')
+
     return LINK
 
 
 def link(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
-    logger.info("Ссылка на портфолио: %s", update.message.text)
+    logger.info("Портфолио: %s", update.message.text)
     reply_keyboard = [['Да', 'Нет']]
 
     update.message.reply_text(
-            'Готовы ли вы к работе на полную занятость в нашей компании, 5-8ч/день?',
-            reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Да или Нет?'
-            ),
-        )
+        'Готовы ли вы к работе на полную занятость в нашей компании, 5-8ч/день?',
+        reply_markup=ReplyKeyboardMarkup(
+            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Да или Нет?'
+        ),
+    )
 
     return DAY
 
@@ -141,20 +142,30 @@ def day(update: Update, context: CallbackContext) -> int:
         global f
         f = False
     update.message.reply_text('Укажите предпочитаемый уровень зарплаты:')
-    return SOURCE
+
+    return INCOME
 
 
-def source(update: Update, context: CallbackContext) -> int:
+def income(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("Предпочитаемый уровень зарплаты: %s", update.message.text)
     if int(update.message.text) > 70000:
         global f
         f = False
-    update.message.reply_text('Спасибо! Ответы обрабатываются')
+    update.message.reply_text('Из какого источника вы узнали о вакансии?')
+
+    return SOURCE
+
+
+def source(update: Update, context: CallbackContext) -> int:
+    user = update.message.from_user
+    logger.info("Источник: %s", update.message.text)
+    update.message.reply_text('Спасибо за информацию!')
     if f:
-        update.message.reply_text('Скоро с вами свяжутся для назначения времени собеседования!')
+        update.message.reply_text('Приглашаем вас на собеседование!')
     else:
         update.message.reply_text('К сожалению, вы нам не подходите')
+
     return ConversationHandler.END
 
 
@@ -191,8 +202,8 @@ def main() -> None:
             EXPERIENCE: [MessageHandler(Filters.text & ~Filters.command, experience)],
             LINK: [MessageHandler(Filters.text & ~Filters.command, link)],
             DAY: [MessageHandler(Filters.regex('^(Да|Нет)$'), day)],
-            SOURCE: [MessageHandler(Filters.text & ~Filters.command, source)],
             INCOME: [MessageHandler(Filters.text & ~Filters.command, income)],
+            SOURCE: [MessageHandler(Filters.text & ~Filters.command, source)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
